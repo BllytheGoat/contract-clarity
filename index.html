@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contract Clarity — see the traps before you sign</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;900&family=Newsreader:ital,opsz,wght@0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#141210; --paper:#F5F2EC; --card:#FFFFFF;
+    --line:#D9D3C8; --muted:#6B655B;
+    --red:#B91C1C; --amber:#A16207; --green:#15803D;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--paper);color:var(--ink);
+    font-family:"Newsreader",Georgia,serif;line-height:1.65}
+  .wrap{max-width:780px;margin:0 auto;padding:48px 20px}
+  header{border-bottom:4px solid var(--ink);padding-bottom:28px;margin-bottom:34px}
+  .kicker{font-family:"Archivo";font-weight:700;font-size:.78rem;
+    letter-spacing:.22em;text-transform:uppercase;color:var(--red)}
+  h1{font-family:"Archivo";font-weight:900;font-size:clamp(2.1rem,6vw,3.4rem);
+    line-height:1.02;letter-spacing:-.02em;margin-top:14px;text-transform:uppercase}
+  h1 span{color:var(--red)}
+  .sub{font-style:italic;font-size:1.15rem;color:var(--muted);margin-top:12px}
+
+  label{display:block;font-family:"Archivo";font-weight:700;font-size:.75rem;
+    letter-spacing:.14em;text-transform:uppercase;margin-bottom:10px}
+  textarea{width:100%;min-height:230px;padding:18px;border:2px solid var(--ink);
+    border-radius:0;background:#fff;font-family:"Newsreader";font-size:1rem;
+    line-height:1.65;resize:vertical}
+  textarea:focus{outline:3px solid var(--red);outline-offset:2px}
+  .row{display:flex;gap:12px;margin-top:16px;flex-wrap:wrap}
+  button.go{flex:1;min-width:220px;padding:16px;border:none;background:var(--red);
+    color:#fff;font-family:"Archivo";font-weight:700;font-size:1.05rem;
+    letter-spacing:.03em;text-transform:uppercase;cursor:pointer;
+    box-shadow:5px 5px 0 var(--ink);transition:transform .12s,box-shadow .12s}
+  button.go:hover:not(:disabled){transform:translate(2px,2px);box-shadow:3px 3px 0 var(--ink)}
+  button.go:disabled{opacity:.55;cursor:wait}
+  button.clear{padding:16px 22px;border:2px solid var(--ink);background:transparent;
+    font-family:"Archivo";font-weight:700;text-transform:uppercase;font-size:.9rem;
+    cursor:pointer;letter-spacing:.06em}
+  .status{margin-top:12px;font-style:italic;color:var(--muted);min-height:1.4em}
+
+  #result{display:none;margin-top:40px}
+  .verdict-line{
+    display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;
+    border:3px solid var(--ink);background:#fff;padding:18px 20px;
+    box-shadow:6px 6px 0 var(--ink);animation:rise .35s ease;margin-bottom:20px;
+  }
+  @keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  .verdict-word{font-family:"Archivo";font-weight:900;font-size:clamp(1.5rem,4.5vw,2.2rem);
+    text-transform:uppercase;line-height:1}
+  .verdict-word.risky{color:var(--red)}
+  .verdict-word.fair{color:var(--green)}
+  .verdict-word.mixed{color:var(--amber)}
+  .verdict-note{flex:1;min-width:200px;font-size:1rem}
+
+  section.block{background:var(--card);border:1.5px solid var(--ink);
+    padding:24px 22px;margin-bottom:16px;animation:rise .35s ease}
+  section.block h2{font-family:"Archivo";font-weight:700;font-size:.85rem;
+    letter-spacing:.16em;text-transform:uppercase;margin-bottom:14px;
+    padding-bottom:8px;border-bottom:2px solid var(--ink)}
+  ol.traps{list-style:none;counter-reset:t}
+  ol.traps li{counter-increment:t;padding:13px 0 13px 44px;position:relative;
+    border-top:1px dashed var(--line)}
+  ol.traps li:first-child{border-top:none}
+  ol.traps li::before{
+    content:counter(t,decimal-leading-zero);position:absolute;left:0;top:12px;
+    font-family:"Archivo";font-weight:900;font-size:1.15rem;color:var(--red);
+  }
+  ol.traps b{font-family:"Archivo";font-size:.95rem;display:block;margin-bottom:2px}
+  .sev{font-family:"Archivo";font-size:.62rem;font-weight:700;letter-spacing:.1em;
+    text-transform:uppercase;padding:2px 8px;border-radius:99px;vertical-align:middle}
+  .sev.high{background:#FEE2E2;color:var(--red)}
+  .sev.medium{background:#FEF3C7;color:var(--amber)}
+  .sev.low{background:#DCFCE7;color:var(--green)}
+  ul.simple{list-style:none}
+  ul.simple li{padding:10px 0;border-top:1px dashed var(--line)}
+  ul.simple li:first-child{border-top:none}
+  .fix{margin-top:6px;font-style:italic;color:var(--green);font-size:.95rem}
+
+  footer{margin-top:48px;border-top:2px solid var(--ink);padding-top:16px;
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;
+    font-family:"Archivo";font-size:.78rem;letter-spacing:.08em;text-transform:uppercase}
+  a{color:var(--ink)}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="kicker">Read before you sign</div>
+    <h1>Contract <span>Clarity</span></h1>
+    <p class="sub">Paste a rental agreement, employment contract or any "standard terms" — find out which clauses are loaded against you, and what to ask for instead.</p>
+  </header>
+
+  <main>
+    <label for="doc">The contract text</label>
+    <textarea id="doc" placeholder="Paste the full contract / agreement here…"></textarea>
+    <div class="row">
+      <button class="go" id="go">Flag the traps</button>
+      <button class="clear" id="clear">Clear</button>
+    </div>
+    <p class="status" id="status" role="status"></p>
+
+    <div id="result" aria-live="polite"></div>
+  </main>
+
+  <footer>
+    <span>Free & instant · not legal advice</span>
+    <span><a href="https://bllythegoat.github.io/plain-docs/">Plain-Docs</a> · <a href="https://bllythegoat.github.io/scam-shield/">Scam Shield</a></span>
+  </footer>
+</div>
+
+<script src="config.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+function getKey(){
+  let k=(window.SHIELD_KEY||"").trim();
+  if(k.includes("{{")||k.length<20) k=localStorage.getItem("shield_groq")||"";
+  if(!k){
+    const e=prompt("Demo mode: paste a free Groq API key (console.groq.com). It stays in your browser only.");
+    if(e){localStorage.setItem("shield_groq",e.trim());k=e.trim();}
+  }
+  return k;
+}
+$("go").addEventListener("click",async()=>{
+  const t=$("doc").value.trim();
+  if(t.length<200){$("status").textContent="Paste more of the contract — at least a few paragraphs.";return;}
+  $("go").disabled=true;$("result").style.display="none";
+  $("status").textContent="Reading every clause…";
+  try{
+    const r=await fetch("https://api.groq.com/openai/v1/chat/completions",{
+      method:"POST",
+      headers:{"Authorization":"Bearer "+getKey(),"Content-Type":"application/json"},
+      body:JSON.stringify({
+        model:"groq/compound-mini",
+        messages:[
+          {role:"system",content:`You are a consumer contract analyst. Find clauses that disadvantage the signer.
+Reply ONLY with minified JSON:
+{"verdict":"risky|mixed|fair","note":"one-sentence overall read","traps":[{"title":"clause name","plain":"what it means for the signer","severity":"high|medium|low","ask":"what to negotiate or ask for instead"}]}
+Rules: max 6 traps, most severe first. 'ask' = one concrete negotiation request. If genuinely fair, verdict 'fair' with empty traps and say why in note. Plain language.`},
+          {role:"user",content:t}
+        ],
+        response_format:{type:"json_object"},max_tokens:1200
+      })
+    });
+    if(!r.ok)throw new Error("API "+r.status);
+    const d=JSON.parse(r.json().choices[0].message.content);
+    const vw=(d.verdict||"mixed").toLowerCase();
+    const word=vw==="risky"?"Loaded against you":vw==="fair"?"Reasonably fair":"Mixed bag";
+    let html=`<div class="verdict-line"><div class="verdict-word ${vw}">${word}</div><div class="verdict-note">${d.note||""}</div></div>`;
+    if(d.traps?.length){
+      html+=`<section class="block"><h2>The traps, ranked</h2><ol class="traps">${
+        d.traps.map(x=>`<li><b>${x.title}</b> <span class="sev ${x.severity||'medium'}">${x.severity||'medium'}</span><br>${x.plain}<br><span class="fix">Ask for: ${x.ask||"—"}</span></li>`).join("")}</ol></section>`;
+    } else {
+      html+=`<section class="block"><h2>The traps, ranked</h2><p>No major traps found — but still read anything about money and termination yourself.</p></section>`;
+    }
+    html+=`<p style="font-size:.82rem;color:var(--muted);text-align:center;margin-top:8px">Automated analysis — not legal advice. For real disputes, talk to a lawyer.</p>`;
+    $("result").innerHTML=html;$("result").style.display="block";
+    $("status").textContent="";
+    $("result").scrollIntoView({behavior:"smooth",block:"nearest"});
+  }catch(e){$("status").textContent="Couldn't analyze ("+e.message+"). Try again.";}
+  finally{$("go").disabled=false;}
+});
+$("clear").addEventListener("click",()=>{$("doc").value="";$("status").textContent="";$("result").style.display="none";});
+</script>
+</body>
+</html>
